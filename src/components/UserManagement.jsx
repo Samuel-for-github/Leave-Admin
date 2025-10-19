@@ -6,6 +6,8 @@ import Dropdown from "@/components/UI/Dropdown.jsx";
 
 export default function UserManagement() {
     const [users, setUsers] = useState([]);
+    const [loadingUserId, setLoadingUserId] = useState(null);
+    const [loadingAction, setLoadingAction] = useState(null); // 'accept' or 'reject'
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -180,16 +182,33 @@ export default function UserManagement() {
         }
     };
 
-    const handleAccept = (userId) => {
-        axios.put(`http://localhost:5000/admin/users/${userId}/accept`, {}, { withCredentials: true })
-            .then(() => fetchUsers())
-            .catch(console.error);
+    const handleAccept = async (userId) => {
+        setLoadingUserId(userId);
+        setLoadingAction('accept');
+        try {
+            await axios.put(`http://localhost:5000/admin/users/${userId}/accept`, {}, { withCredentials: true });
+            fetchUsers();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoadingUserId(null);
+            setLoadingAction(null);
+        }
     };
 
-    const handleReject = (userId) => {
-        axios.put(`http://localhost:5000/admin/users/${userId}/reject`, {}, { withCredentials: true })
-            .then(() => fetchUsers())
-            .catch(console.error);
+
+    const handleReject = async (userId) => {
+        setLoadingUserId(userId);
+        setLoadingAction('reject');
+        try {
+            await axios.put(`http://localhost:5000/admin/users/${userId}/reject`, {}, { withCredentials: true });
+            fetchUsers();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoadingUserId(null);
+            setLoadingAction(null);
+        }
     };
 
     const resetForm = () => {
@@ -336,19 +355,40 @@ export default function UserManagement() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div className="flex space-x-2">
+
                                     {user.status === 'PENDING' ? (
                                         <>
                                             <button
                                                 onClick={() => handleAccept(user.id)}
-                                                className="text-green-600 hover:text-green-900"
+                                                className={`text-green-600 hover:text-green-900 flex items-center space-x-1 ${
+                                                    loadingUserId === user.id &&
+                                                    loadingAction === "accept"
+                                                        ? "opacity-60 cursor-not-allowed"
+                                                        : ""
+                                                }`}
                                             >
-                                                Accept
+                                                {loadingUserId === user.id &&
+                                                loadingAction === "accept" ? (
+                                                    <span className="animate-spin h-4 w-4 border-2 border-green-600 border-t-transparent rounded-full"></span>
+                                                ) : (
+                                                    "Accept"
+                                                )}
                                             </button>
                                             <button
                                                 onClick={() => handleReject(user.id)}
-                                                className="text-red-600 hover:text-red-900"
+                                                className={`text-red-600 hover:text-red-900 flex items-center space-x-1 ${
+                                                    loadingUserId === user.id &&
+                                                    loadingAction === "reject"
+                                                        ? "opacity-60 cursor-not-allowed"
+                                                        : ""
+                                                }`}
                                             >
-                                                Reject
+                                                {loadingUserId === user.id &&
+                                                loadingAction === "reject" ? (
+                                                    <span className="animate-spin h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full"></span>
+                                                ) : (
+                                                    "Reject"
+                                                )}
                                             </button>
                                         </>
                                     ) : user.status === 'ACCEPTED' ? (
