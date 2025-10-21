@@ -20,7 +20,11 @@ export default function LeaveHistory() {
 
     const fetchHistory = () => {
         const params = new URLSearchParams(filters).toString();
+<<<<<<< HEAD
         axios.get(`http://localhost:5000/admin/leave-history?${params}`, { withCredentials: true })
+=======
+        axios.get(`http://localhost:8080/admin/leave-history?${params}`, { withCredentials: true })
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
             .then((res) => {
                 setHistory(res.data);
             })
@@ -28,7 +32,11 @@ export default function LeaveHistory() {
     };
 
     const fetchUsers = () => {
+<<<<<<< HEAD
         axios.get('http://localhost:5000/admin/users', { withCredentials: true })
+=======
+        axios.get('http://localhost:8080/admin/users', { withCredentials: true })
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
             .then((res) => {
                 setUsers(res.data);
             })
@@ -47,7 +55,11 @@ export default function LeaveHistory() {
     };
 
     const exportToCSV = () => {
+<<<<<<< HEAD
         axios.get('http://localhost:5000/admin/leave-history/export', {
+=======
+        axios.get('http://localhost:8080/admin/leave-history/export', {
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
             withCredentials: true,
             responseType: 'blob'
         })

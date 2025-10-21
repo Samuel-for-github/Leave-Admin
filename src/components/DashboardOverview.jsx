@@ -20,7 +20,11 @@ export default function DashboardOverview() {
     });
 
     useEffect(() => {
+<<<<<<< HEAD
         axios.get('http://localhost:5000/admin/stats', { withCredentials: true })
+=======
+        axios.get('http://localhost:8080/admin/stats', { withCredentials: true })
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
             .then((res) => {
                 setStats(res.data);
             })

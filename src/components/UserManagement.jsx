@@ -47,7 +47,11 @@ export default function UserManagement() {
     }, [filters, rowsPerPage]);
 
     const fetchUsers = () => {
+<<<<<<< HEAD
         axios.get('http://localhost:5000/admin/users/all', { withCredentials: true })
+=======
+        axios.get('http://localhost:8080/admin/users/all', { withCredentials: true })
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
             .then((res) => {
                 console.log(res.data.data);
                 setUsers(res.data.data);
@@ -146,14 +150,22 @@ export default function UserManagement() {
         e.preventDefault();
 
         if (editingUser) {
+<<<<<<< HEAD
             axios.put(`http://localhost:5000/admin/users/${editingUser.id}`, formData, { withCredentials: true })
+=======
+            axios.put(`http://localhost:8080/admin/users/${editingUser.id}`, formData, { withCredentials: true })
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
                 .then(() => {
                     fetchUsers();
                     resetForm();
                 })
                 .catch(console.error);
         } else {
+<<<<<<< HEAD
             axios.post('http://localhost:5000/admin/users', formData, { withCredentials: true })
+=======
+            axios.post('http://localhost:8080/admin/users', formData, { withCredentials: true })
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
                 .then(() => {
                     fetchUsers();
                     resetForm();
@@ -176,7 +188,11 @@ export default function UserManagement() {
 
     const handleDelete = (userId) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
+<<<<<<< HEAD
             axios.delete(`http://localhost:5000/admin/users/${userId}`, { withCredentials: true })
+=======
+            axios.delete(`http://localhost:8080/admin/users/${userId}`, { withCredentials: true })
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
                 .then(() => fetchUsers())
                 .catch(console.error);
         }
@@ -186,7 +202,11 @@ export default function UserManagement() {
         setLoadingUserId(userId);
         setLoadingAction('accept');
         try {
+<<<<<<< HEAD
             await axios.put(`http://localhost:5000/admin/users/${userId}/accept`, {}, { withCredentials: true });
+=======
+            await axios.put(`http://localhost:8080/admin/users/${userId}/accept`, {}, { withCredentials: true });
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
             fetchUsers();
         } catch (err) {
             console.error(err);
@@ -201,7 +221,11 @@ export default function UserManagement() {
         setLoadingUserId(userId);
         setLoadingAction('reject');
         try {
+<<<<<<< HEAD
             await axios.put(`http://localhost:5000/admin/users/${userId}/reject`, {}, { withCredentials: true });
+=======
+            await axios.put(`http://localhost:8080/admin/users/${userId}/reject`, {}, { withCredentials: true });
+>>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
             fetchUsers();
         } catch (err) {
             console.error(err);
