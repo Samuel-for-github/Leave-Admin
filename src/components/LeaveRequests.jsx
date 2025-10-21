@@ -14,11 +14,9 @@ export default function LeaveRequests() {
     }, [filter]);
 
     const fetchLeaves = () => {
-<<<<<<< HEAD
+
         axios.get(`http://localhost:5000/admin/leaves?status=${filter}`, { withCredentials: true })
-=======
-        axios.get(`http://localhost:8080/admin/leaves?status=${filter}`, { withCredentials: true })
->>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
+
             .then((res) => {
                 setLeaves(res.data);
             })
@@ -26,11 +24,9 @@ export default function LeaveRequests() {
     };
 
     const handleApprove = (leaveId) => {
-<<<<<<< HEAD
+
         axios.put(`http://localhost:5000/admin/leaves/${leaveId}/approve`, {}, { withCredentials: true })
-=======
-        axios.put(`http://localhost:8080/admin/leaves/${leaveId}/approve`, {}, { withCredentials: true })
->>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
+
             .then(() => {
                 fetchLeaves();
                 setShowModal(false);
@@ -41,11 +37,9 @@ export default function LeaveRequests() {
     const handleReject = (leaveId) => {
         const reason = prompt('Please provide a reason for rejection:');
         if (reason) {
-<<<<<<< HEAD
+
             axios.put(`http://localhost:5000/admin/leaves/${leaveId}/reject`, { reason }, { withCredentials: true })
-=======
-            axios.put(`http://localhost:8080/admin/leaves/${leaveId}/reject`, { reason }, { withCredentials: true })
->>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
+
                 .then(() => {
                     fetchLeaves();
                     setShowModal(false);

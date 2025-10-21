@@ -22,11 +22,9 @@ export default function AdminDashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
-<<<<<<< HEAD
+
         axios.get('http://localhost:5000/admin/dashboard', { withCredentials: true })
-=======
-        axios.get('http://localhost:8080/admin/dashboard', { withCredentials: true })
->>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
+
             .then((res) => {
                 setAdminInfo(res.data);
             })
@@ -36,11 +34,10 @@ export default function AdminDashboard() {
             });
 
         // Fetch pending leaves count
-<<<<<<< HEAD
+
         axios.get('http://localhost:5000/admin/leaves/pending-count', { withCredentials: true })
-=======
-        axios.get('http://localhost:8080/admin/leaves/pending-count', { withCredentials: true })
->>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
+
+
             .then((res) => {
                 setPendingCount(res.data.count);
             })
@@ -48,11 +45,10 @@ export default function AdminDashboard() {
     }, [navigate]);
 
     const handleLogout = () => {
-<<<<<<< HEAD
+
         axios.post('http://localhost:5000/admin/logout', {}, { withCredentials: true })
-=======
-        axios.post('http://localhost:8080/admin/logout', {}, { withCredentials: true })
->>>>>>> 1aafb9cb5cdebcea246157699756f5ca8cd48537
+
+
             .then(() => {
                 navigate('/login');
             });
