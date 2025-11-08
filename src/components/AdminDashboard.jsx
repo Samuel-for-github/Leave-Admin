@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 
     const menuItems = [
         { name: 'Dashboard', icon: HomeIcon, path: '/admin' },
-        { name: 'Leave Requests', icon: DocumentCheckIcon, path: '/admin/leaves', badge: pendingCount },
+        // { name: 'Leave Requests', icon: DocumentCheckIcon, path: '/admin/leaves', badge: pendingCount },
         { name: 'Users Management', icon: UsersIcon, path: '/admin/users' },
         { name: 'Leave History', icon: ClockIcon, path: '/admin/leave-history' },
         { name: 'Reports', icon: ChartBarIcon, path: '/admin/reports' },

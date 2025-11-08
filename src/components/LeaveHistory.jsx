@@ -9,34 +9,36 @@ export default function LeaveHistory() {
         userId: '',
         startDate: '',
         endDate: '',
-        status: ''
+        status: '',
+        department: ''
     });
     const [users, setUsers] = useState([]);
 
-    useEffect(() => {
-        fetchHistory();
-        fetchUsers();
-    }, []);
+
 
     const fetchHistory = () => {
+        console.log("filters", filters);
         const params = new URLSearchParams(filters).toString();
 
-        axios.get(`http://localhost:5000/admin/leave-history?${params}`, { withCredentials: true })
+        axios.get(`http://localhost:5000/leaves/leave-history?${params}`, { withCredentials: true })
 
             .then((res) => {
-                setHistory(res.data);
+                console.log("history", res.data.data);
+                // setHistory(res.data);
             })
             .catch(console.error);
     };
 
     const fetchUsers = () => {
 
-        axios.get('http://localhost:5000/admin/users', { withCredentials: true })
+      axios.get('http://localhost:5000/admin/users/all', { withCredentials: true })
 
             .then((res) => {
-                setUsers(res.data);
+                console.log(res.data.data);
+                 setUsers(res.data.data);
             })
             .catch(console.error);
+
     };
 
     const handleFilterChange = (e) => {
@@ -67,7 +69,11 @@ export default function LeaveHistory() {
             })
             .catch(console.error);
     };
+    useEffect(() => {
 
+        fetchHistory();
+        fetchUsers();
+    }, []);
     return (
         <div className="container mx-auto px-6 py-8">
             <div className="flex justify-between items-center mb-6">
@@ -83,9 +89,9 @@ export default function LeaveHistory() {
 
             {/* Filters */}
             <div className="bg-white p-4 rounded-lg shadow mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Faculty</label>
                         <select
                             name="userId"
                             value={filters.userId}
@@ -93,9 +99,9 @@ export default function LeaveHistory() {
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         >
                             <option value="">All Employees</option>
-                            {users.map((user) => (
-                                <option key={user.id} value={user.id}>
-                                    {user.name} ({user.role})
+                            {users.filter((user)=> user.role === "FACULTY").map((user) => (
+                                <option key={user.id} value={user.email}>
+                                    {user.username}
                                 </option>
                             ))}
                         </select>
@@ -121,6 +127,20 @@ export default function LeaveHistory() {
                         />
                     </div>
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                        <select
+                            name="department"
+                            value={filters.department}
+                            onChange={handleFilterChange}
+                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        >
+                            <option value="">All Departments</option>
+                            <option value="CSE">CSE</option>
+                            <option value="IT">IT</option>
+                            <option value="ECOMP">ECOMP</option>
+                        </select>
+                    </div>
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                         <select
                             name="status"
@@ -129,15 +149,15 @@ export default function LeaveHistory() {
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         >
                             <option value="">All Status</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="pending">Pending</option>
+                            <option value="ACCEPTED">Approved</option>
+                            <option value="REJECTED">Rejected</option>
+                            <option value="PENDING">Pending</option>
                         </select>
                     </div>
-                    <div className="flex items-end">
+                    <div className="flex w-full items-center">
                         <button
                             onClick={applyFilters}
-                            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                            className="w-full px-2 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                         >
                             Apply Filters
                         </button>
