@@ -12,10 +12,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    proxy: {
-      '/admin': 'http://localhost:5000', // Proxy any request to /admin to the backend
-    },
-  },
 });
-

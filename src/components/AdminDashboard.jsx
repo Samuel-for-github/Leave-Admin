@@ -139,7 +139,7 @@ export default function AdminDashboard() {
                         </button>
                         <div className="flex items-center space-x-4">
                             <button className="relative p-2 text-gray-600 hover:text-gray-900">
-                                <BellIcon className="h-6 w-6" />
+                                {/*<BellIcon className="h-6 w-6" />*/}
                                 {pendingCount > 0 && (
                                     <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
                                 )}

@@ -1,10 +1,11 @@
 // components/LeaveHistory.jsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CalendarIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { DocumentTextIcon } from '@heroicons/react/24/outline';
 
 export default function LeaveHistory() {
     const [history, setHistory] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState({
         userId: '',
         startDate: '',
@@ -14,31 +15,56 @@ export default function LeaveHistory() {
     });
     const [users, setUsers] = useState([]);
 
+    const calculateDays = (startDate, endDate)=> {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays + 1;
+    };
 
+    const formatLeaveType = (leaveType) => {
+        return leaveType.replace(/_/g, ' ');
+    };
 
     const fetchHistory = () => {
-        console.log("filters", filters);
-        const params = new URLSearchParams(filters).toString();
+        setLoading(true);
 
-        axios.get(`http://localhost:5000/leaves/leave-history?${params}`, { withCredentials: true })
+        // Only include non-empty filters
+        const activeFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+            if (value && value.trim() !== '') {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
 
+        const params = new URLSearchParams(activeFilters).toString();
+        const url = `http://localhost:5000/leaves/leave-history${params ? `?${params}` : ''}`;
+
+        axios.get(url, { withCredentials: true })
             .then((res) => {
                 console.log("history", res.data.data);
-                // setHistory(res.data);
+                setHistory(res.data.data || []); // Fixed: Actually set the history
             })
-            .catch(console.error);
+            .catch((error) => {
+                console.error("Error fetching history:", error);
+                setHistory([]);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     const fetchUsers = () => {
-
-      axios.get('http://localhost:5000/admin/users/all', { withCredentials: true })
-
+        axios.get('http://localhost:5000/admin/users/all', { withCredentials: true })
             .then((res) => {
                 console.log(res.data.data);
-                 setUsers(res.data.data);
+                setUsers(res.data.data || []);
             })
-            .catch(console.error);
-
+            .catch((error) => {
+                console.error("Error fetching users:", error);
+                setUsers([]);
+            });
     };
 
     const handleFilterChange = (e) => {
@@ -48,14 +74,33 @@ export default function LeaveHistory() {
         });
     };
 
+    const clearFilters = () => {
+        setFilters({
+            userId: '',
+            startDate: '',
+            endDate: '',
+            status: '',
+            department: ''
+        });
+    };
+
     const applyFilters = () => {
         fetchHistory();
     };
 
     const exportToCSV = () => {
+        // Include current filters in export
+        const activeFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+            if (value && value.trim() !== '') {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
 
-        axios.get('http://localhost:5000/admin/leave-history/export', {
+        const params = new URLSearchParams(activeFilters).toString();
+        const url = `http://localhost:5000/admin/leave-history/export${params ? `?${params}` : ''}`;
 
+        axios.get(url, {
             withCredentials: true,
             responseType: 'blob'
         })
@@ -66,14 +111,46 @@ export default function LeaveHistory() {
                 link.setAttribute('download', `leave-history-${new Date().toISOString().split('T')[0]}.csv`);
                 document.body.appendChild(link);
                 link.click();
+                link.remove(); // Clean up
+                window.URL.revokeObjectURL(url); // Free up memory
             })
-            .catch(console.error);
+            .catch((error) => {
+                console.error("Error exporting CSV:", error);
+                alert("Failed to export CSV. Please try again.");
+            });
     };
-    useEffect(() => {
 
+    useEffect(() => {
         fetchHistory();
         fetchUsers();
     }, []);
+
+    // Helper function to get status badge styles
+    const getStatusBadgeClass = (status) => {
+        const statusUpper = status?.toUpperCase();
+        switch (statusUpper) {
+            case 'ACCEPTED':
+            case 'APPROVED':
+                return 'bg-green-100 text-green-800';
+            case 'REJECTED':
+                return 'bg-red-100 text-red-800';
+            case 'PENDING':
+                return 'bg-yellow-100 text-yellow-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    // Helper function to format date safely
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch {
+            return '-';
+        }
+    };
+
     return (
         <div className="container mx-auto px-6 py-8">
             <div className="flex justify-between items-center mb-6">
@@ -99,11 +176,13 @@ export default function LeaveHistory() {
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         >
                             <option value="">All Employees</option>
-                            {users.filter((user)=> user.role === "FACULTY").map((user) => (
-                                <option key={user.id} value={user.email}>
-                                    {user.username}
-                                </option>
-                            ))}
+                            {users
+                                .filter((user) => user.role === "FACULTY")
+                                .map((user) => (
+                                    <option key={user.id} value={user.email}>
+                                        {user.username}
+                                    </option>
+                                ))}
                         </select>
                     </div>
                     <div>
@@ -154,12 +233,19 @@ export default function LeaveHistory() {
                             <option value="PENDING">Pending</option>
                         </select>
                     </div>
-                    <div className="flex w-full items-center">
+                    <div className="flex items-end gap-2">
                         <button
                             onClick={applyFilters}
-                            className="w-full px-2 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                            disabled={loading}
+                            className="flex-1 px-2 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-indigo-400"
                         >
-                            Apply Filters
+                            {loading ? 'Loading...' : 'Apply Filters'}
+                        </button>
+                        <button
+                            onClick={clearFilters}
+                            className="px-2 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                        >
+                            Clear
                         </button>
                     </div>
                 </div>
@@ -171,7 +257,10 @@ export default function LeaveHistory() {
                     <thead className="bg-gray-50">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Employee
+                            Faculty Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Department
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Leave Type
@@ -191,47 +280,56 @@ export default function LeaveHistory() {
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                    {history.map((leave) => (
-                        <tr key={leave.id}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div>
-                                    <div className="text-sm font-medium text-gray-900">
-                                        {leave.employeeName}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                        {leave.department}
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {leave.leaveType}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">
-                                    {new Date(leave.startDate).toLocaleDateString()} -
-                                    {new Date(leave.endDate).toLocaleDateString()}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    {leave.totalDays} days
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {new Date(leave.appliedOn).toLocaleDateString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                        leave.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                            leave.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                                'bg-yellow-100 text-yellow-800'
-                                    }`}>
-                                        {leave.status}
-                                    </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {leave.approvedBy || '-'}
+                    {loading ? (
+                        <tr>
+                            <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                                Loading...
                             </td>
                         </tr>
-                    ))}
+                    ) : history.length === 0 ? (
+                        <tr>
+                            <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                                No leave history found.
+                            </td>
+                        </tr>
+                    ) : (
+                        history.map((leave) => (
+                            <tr key={leave.id}>
+                                <td className="px-6 py-4 whitespace-nowrap">
+
+                                        <div className="text-sm font-medium text-gray-900">
+                                            {leave.username || leave.user?.username || '-'}
+                                        </div>
+
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+
+                                        <div className="text-sm text-gray-500">
+                                            {leave.department || leave.user?.department || '-'}
+                                        </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {formatLeaveType(leave.leaveType) || leave.type || '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="text-sm text-gray-900">
+                                        {calculateDays(leave.startDate, leave.endDate)} days
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {formatDate(leave.appliedOn || leave.createdAt)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(leave.status)}`}>
+                                            {leave.status || '-'}
+                                        </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {leave.approvedBy || leave.reviewedBy?.username || '-'}
+                                </td>
+                            </tr>
+                        ))
+                    )}
                     </tbody>
                 </table>
             </div>
