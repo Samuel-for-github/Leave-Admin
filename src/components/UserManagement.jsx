@@ -18,7 +18,6 @@ export default function UserManagement() {
         email: '',
         role: 'FACULTY'|'HOD'|'PRINCIPAL',
         department: '',
-        password: ''
     });
 
     // Filter states
@@ -176,7 +175,7 @@ axios.put(`http://localhost:5000/admin/users/${editingUser.id}`, formData, { wit
             email: user.email,
             role: user.role,
             department: user.department,
-            password: ''
+
         });
         setShowModal(true);
     };
@@ -229,7 +228,7 @@ axios.put(`http://localhost:5000/admin/users/${editingUser.id}`, formData, { wit
             email: '',
             role: 'faculty',
             department: '',
-            password: ''
+
         });
         setEditingUser(null);
         setShowModal(false);
@@ -546,9 +545,9 @@ axios.put(`http://localhost:5000/admin/users/${editingUser.id}`, formData, { wit
                                 <Dropdown
                                     label="Role"
                                     options={[
-                                        { value: 'faculty', label: 'Faculty' },
-                                        { value: 'hod', label: 'HOD' },
-                                        { value: 'principal', label: 'Principal' }
+                                        { value: 'FACULTY', label: 'Faculty' },
+                                        { value: 'HOD', label: 'HOD' },
+                                        { value: 'PRINCIPAL', label: 'Principal' }
                                     ]}
                                     value={formData.role}
                                     onChange={(value) => setFormData({ ...formData, role: value })}

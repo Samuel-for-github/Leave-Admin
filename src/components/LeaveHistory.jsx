@@ -10,6 +10,8 @@ export default function LeaveHistory() {
         userId: '',
         startDate: '',
         endDate: '',
+        date: '',
+        leaveType: '',
         status: '',
         department: ''
     });
@@ -39,6 +41,7 @@ export default function LeaveHistory() {
         }, {});
 
         const params = new URLSearchParams(activeFilters).toString();
+        console.log(params)
         const url = `http://localhost:5000/leaves/leave-history${params ? `?${params}` : ''}`;
 
         axios.get(url, { withCredentials: true })
@@ -68,6 +71,7 @@ export default function LeaveHistory() {
     };
 
     const handleFilterChange = (e) => {
+        console.log(e.target.name, e.target.value)
         setFilters({
             ...filters,
             [e.target.name]: e.target.value
@@ -78,6 +82,8 @@ export default function LeaveHistory() {
         setFilters({
             userId: '',
             startDate: '',
+            date: "",
+            leaveType: "",
             endDate: '',
             status: '',
             department: ''
@@ -90,6 +96,8 @@ export default function LeaveHistory() {
 
     const exportToCSV = () => {
         // Include current filters in export
+        console.log("press")
+
         const activeFilters = Object.entries(filters).reduce((acc, [key, value]) => {
             if (value && value.trim() !== '') {
                 acc[key] = value;
@@ -98,14 +106,17 @@ export default function LeaveHistory() {
         }, {});
 
         const params = new URLSearchParams(activeFilters).toString();
-        const url = `http://localhost:5000/admin/leave-history/export${params ? `?${params}` : ''}`;
+        console.log(params)
+        const url = `http://localhost:5000/leaves/history/export${params ? `?${params}` : ''}`;
 
         axios.get(url, {
             withCredentials: true,
             responseType: 'blob'
         })
             .then((res) => {
+                console.log(res.data)
                 const url = window.URL.createObjectURL(new Blob([res.data]));
+                console.log(url)
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', `leave-history-${new Date().toISOString().split('T')[0]}.csv`);
@@ -175,7 +186,7 @@ export default function LeaveHistory() {
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         >
-                            <option value="">All Employees</option>
+                            <option value="">All Faculty</option>
                             {users
                                 .filter((user) => user.role === "FACULTY")
                                 .map((user) => (
@@ -186,24 +197,30 @@ export default function LeaveHistory() {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Applied Date</label>
                         <input
                             type="date"
-                            name="startDate"
-                            value={filters.startDate}
+                            name="date"
+                            value={filters.date}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                        <input
-                            type="date"
-                            name="endDate"
-                            value={filters.endDate}
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type</label>
+                        <select
+                            name="leaveType"
+                            value={filters.leaveType}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        />
+                        >
+                            <option value="">All Leaves Types</option>
+                            <option value="Earned_Leave">Earned Leave</option>
+                            <option value="Reserved_Leave">Reserved Leave</option>
+                            <option value="Casual_Leave">Casual Leave</option>
+                            <option value="Sick_Leave">Sick Leave</option>
+                            <option value="Paid_Leave">Paid Leave</option>
+                        </select>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
@@ -274,9 +291,7 @@ export default function LeaveHistory() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Status
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Approved/Rejected By
-                        </th>
+
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -321,12 +336,10 @@ export default function LeaveHistory() {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(leave.status)}`}>
-                                            {leave.status || '-'}
+                                            {formatLeaveType(leave.status) || '-'}
                                         </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {leave.approvedBy || leave.reviewedBy?.username || '-'}
-                                </td>
+
                             </tr>
                         ))
                     )}

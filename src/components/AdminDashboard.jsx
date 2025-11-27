@@ -35,13 +35,13 @@ export default function AdminDashboard() {
 
         // Fetch pending leaves count
 
-        axios.get('http://localhost:5000/admin/leaves/pending-count', { withCredentials: true })
-
-
-            .then((res) => {
-                setPendingCount(res.data.count);
-            })
-            .catch(console.error);
+        // axios.get('http://localhost:5000/admin/leaves/pending-count', { withCredentials: true })
+        //
+        //
+        //     .then((res) => {
+        //         // setPendingCount(res.data.count);
+        //     })
+        //     .catch(console.error);
     }, [navigate]);
 
     const handleLogout = () => {
