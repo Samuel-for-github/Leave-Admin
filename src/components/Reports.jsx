@@ -36,7 +36,7 @@ export default function Reports() {
     }, [selectedYear]);
 
     const fetchReportData = () => {
-        axios.get(`https://leave-backend-acb9.onrender.com/admin/reports?year=${selectedYear}`, { withCredentials: true })
+        axios.get(`http://localhost:5000/admin/reports?year=${selectedYear}`, { withCredentials: true })
             .then((res) => {
                 setReportData(res.data);
             })

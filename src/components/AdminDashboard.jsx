@@ -23,7 +23,7 @@ export default function AdminDashboard() {
 
     useEffect(() => {
 
-        axios.get('https://leave-backend-acb9.onrender.com/admin/dashboard', { withCredentials: true })
+        axios.get('http://localhost:5000/admin/dashboard', { withCredentials: true })
 
             .then((res) => {
                 setAdminInfo(res.data);
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
 
     const handleLogout = () => {
 
-        axios.post('https://leave-backend-acb9.onrender.com/admin/logout', {}, { withCredentials: true })
+        axios.post('http://localhost:5000/admin/logout', {}, { withCredentials: true })
 
 
             .then(() => {

@@ -15,7 +15,7 @@ export default function LeaveRequests() {
 
     const fetchLeaves = () => {
 
-        axios.get(`https://leave-backend-acb9.onrender.com/admin/leaves?status=${filter}`, { withCredentials: true })
+        axios.get(`http://localhost:5000/admin/leaves?status=${filter}`, { withCredentials: true })
 
             .then((res) => {
                 setLeaves(res.data);
@@ -25,7 +25,7 @@ export default function LeaveRequests() {
 
     const handleApprove = (leaveId) => {
 
-        axios.put(`https://leave-backend-acb9.onrender.com/admin/leaves/${leaveId}/approve`, {}, { withCredentials: true })
+        axios.put(`http://localhost:5000/admin/leaves/${leaveId}/approve`, {}, { withCredentials: true })
 
             .then(() => {
                 fetchLeaves();
@@ -38,7 +38,7 @@ export default function LeaveRequests() {
         const reason = prompt('Please provide a reason for rejection:');
         if (reason) {
 
-            axios.put(`https://leave-backend-acb9.onrender.com/admin/leaves/${leaveId}/reject`, { reason }, { withCredentials: true })
+            axios.put(`http://localhost:5000/admin/leaves/${leaveId}/reject`, { reason }, { withCredentials: true })
 
                 .then(() => {
                     fetchLeaves();

@@ -42,7 +42,7 @@ export default function LeaveHistory() {
 
         const params = new URLSearchParams(activeFilters).toString();
         console.log(params)
-        const url = `https://leave-backend-acb9.onrender.com/leaves/leave-history${params ? `?${params}` : ''}`;
+        const url = `http://localhost:5000/leaves/leave-history${params ? `?${params}` : ''}`;
 
         axios.get(url, { withCredentials: true })
             .then((res) => {
@@ -59,7 +59,7 @@ export default function LeaveHistory() {
     };
 
     const fetchUsers = () => {
-        axios.get('https://leave-backend-acb9.onrender.com/admin/users/all', { withCredentials: true })
+        axios.get('http://localhost:5000/admin/users/all', { withCredentials: true })
             .then((res) => {
                 console.log(res.data.data);
                 setUsers(res.data.data || []);

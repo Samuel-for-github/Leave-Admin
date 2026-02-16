@@ -49,7 +49,7 @@ export default function UserManagement() {
 
     const fetchUsers = () => {
 
-        axios.get('https://leave-backend-acb9.onrender.com/admin/users/all', { withCredentials: true })
+        axios.get('http://localhost:5000/admin/users/all', { withCredentials: true })
 
             .then((res) => {
                 console.log(res.data.data);
@@ -149,7 +149,7 @@ export default function UserManagement() {
         e.preventDefault();
 
         if (editingUser) {
-axios.put(`https://leave-backend-acb9.onrender.com/admin/users/${editingUser.id}`, formData, { withCredentials: true })
+axios.put(`http://localhost:5000/admin/users/${editingUser.id}`, formData, { withCredentials: true })
 
                 .then(() => {
                     fetchUsers();
@@ -158,7 +158,7 @@ axios.put(`https://leave-backend-acb9.onrender.com/admin/users/${editingUser.id}
                 .catch(console.error);
         } else {
 
-            axios.post('https://leave-backend-acb9.onrender.com/admin/users', formData, { withCredentials: true })
+            axios.post('http://localhost:5000/admin/users', formData, { withCredentials: true })
 
                 .then(() => {
                     fetchUsers();
@@ -183,7 +183,7 @@ axios.put(`https://leave-backend-acb9.onrender.com/admin/users/${editingUser.id}
     const handleDelete = (userId) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
 
-            axios.delete(`https://leave-backend-acb9.onrender.com/admin/users/${userId}`, { withCredentials: true })
+            axios.delete(`http://localhost:5000/admin/users/${userId}`, { withCredentials: true })
 
                 .then(() => fetchUsers())
                 .catch(console.error);
@@ -195,7 +195,7 @@ axios.put(`https://leave-backend-acb9.onrender.com/admin/users/${editingUser.id}
         setLoadingAction('accept');
         try {
 
-            await axios.put(`https://leave-backend-acb9.onrender.com/admin/users/${userId}/accept`, {}, { withCredentials: true });
+            await axios.put(`http://localhost:5000/admin/users/${userId}/accept`, {}, { withCredentials: true });
 
             fetchUsers();
         } catch (err) {
@@ -211,7 +211,7 @@ axios.put(`https://leave-backend-acb9.onrender.com/admin/users/${editingUser.id}
         setLoadingUserId(userId);
         setLoadingAction('reject');
         try {
-            await axios.put(`https://leave-backend-acb9.onrender.com/admin/users/${userId}/reject`, {}, { withCredentials: true });
+            await axios.put(`http://localhost:5000/admin/users/${userId}/reject`, {}, { withCredentials: true });
 
             fetchUsers();
         } catch (err) {
