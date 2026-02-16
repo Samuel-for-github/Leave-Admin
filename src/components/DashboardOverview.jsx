@@ -21,7 +21,7 @@ export default function DashboardOverview() {
 
     useEffect(() => {
 
-        axios.get('http://localhost:5000/admin/stats', { withCredentials: true })
+        axios.get('https://leave-backend-acb9.onrender.com/admin/stats', { withCredentials: true })
 
 
             .then((res) => {

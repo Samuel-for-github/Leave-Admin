@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const API_URL = 'http://localhost:5000/admin';
+const API_URL = 'https://leave-backend-acb9.onrender.com/admin';
 
 
 export const loginAdmin = (email, password) => {
